@@ -1,0 +1,49 @@
+/* svg .ESAZ:hover {
+	fill: purple;
+} */
+
+div.ttip { 
+	position: absolute;     
+/*	text-align: center;     */
+	padding: 2px;
+	padding-left: 10px;
+	padding-right: 10px;       
+	font: 12px sans-serif;    
+	background: #fff; 
+	border: 1px;
+	border-color: black;
+	border-radius: 5px;        
+	pointer-events: none;     
+}
+
+.clicked {
+	fill: purple !important;
+}
+
+div#school_name{
+	position: absolute;
+	font-size: 35px !important;
+	top: 100px;
+	left: 40%;
+}
+
+div#school_address{
+	position: absolute;
+	font-size: 20px;
+	top: 150px;
+	left: 40%;
+}
+
+div#score{
+	position: absolute;
+	top: 200px;
+	left: 40%;
+	font-size: 35px;
+}
+
+div#score_bar {
+	top: 10px;
+	height: 20px;
+	width: 10px;
+	background-color: #3f007d;
+}
