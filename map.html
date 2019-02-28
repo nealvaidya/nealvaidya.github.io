@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<style>
+
+.land {
+  fill: #ddd;
+}
+
+.country-arc{
+  fill: none;
+}
+
+.country:hover .country-arc {
+  stroke: #f00;
+}
+
+.country-cell {
+  fill: none;
+  pointer-events: all;
+}
+</style>
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+<script>
+var width = 1000;
+var height = 880;
+//context = d3.select("canvas").node().getContext("2d"), 
+      // context = d3.select('body').append('svg'),
+      //  path = d3.geoPath(d3.geoMercator(), context);
+
+var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+var projection = d3.geoMercator()
+.translate([width / 2, 3 * height / 5]);
+
+var path = d3.geoPath().projection(projection);
+
+var voronoi = d3.voronoi()
+    .extent([[-1, -1], [width + 1, height + 1]]);
+
+d3.queue()
+  .defer(d3.json, "https://unpkg.com/world-atlas@1/world/110m.json")
+  .defer(d3.csv, "ties.csv", typeTie)
+  .defer(d3.csv, "countries.csv", typeCountry)
+  .await(ready);
+
+function ready(error, world, ties, countries) {
+  if (error) throw error;
+
+var geo = topojson.feature(world, world.objects.countries);
+
+var countryByName = d3.map(countries, function(d) { return d.country });
+
+ties.forEach(function(tie){
+  var source = countryByName.get(tie.source),
+      target = countryByName.get(tie.target);
+  source.arcs.coordinates.push([source, target]);
+  target.arcs.coordinates.push([target, source]);
+});
+
+countries = countries
+      .filter(function(d) { return d.arcs.coordinates.length; });
+
+svg.append("g")
+   .selectAll('path')
+   .data(geo.features)
+   .enter()
+   .append('path')
+   .attr("class", "land")
+   .attr("d", path);
+
+svg.append("path")
+   .datum({type: "MultiPoint", coordinates: countries})
+   .attr("class", "country-dots")
+   .attr("d", path);
+
+var country = svg.selectAll(".country")
+  .data(countries)
+  .enter().append("g")
+  .attr("class", "country");
+
+country.append("path")
+  .attr("class", "country-arc")
+  .attr("d", function(d) {return path(d.arcs); });
+
+country.append("path")
+      .data(voronoi.polygons(countries.map(projection)))
+      .attr("class", "country-cell")
+      .attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; });
+};
+
+function typeCountry(d){
+  d[0] = +d.lon;
+  d[1] = +d.lat;
+  d.arcs = {type: "MultiLineString", coordinates: []};
+  return d;
+}
+
+function typeTie(d){
+  d.weight = +d.weight;
+  return d
+}
+
+// d3.csv("ties.csv", function(ties) {
+//   var linksByOrigin{},
+//       countByCountry{},
+//       locationByCountry{},
+//       positions = [];
+
+//   var arc - d3.
+
+// })
+
+// d3.csv("countries.csv", function(country){
+
+// })
+
+</script>
+</body>
