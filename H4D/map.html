@@ -142,7 +142,7 @@ Promise.all([
     .attr("class", "country-arc")
     .attr("d", path)
     .attr("stroke-width", function(d) {
-      return Math.log(d.properties.weight)/2
+      return Math.pow(d.properties.weight, 1/3)/1000
     });
 
 
